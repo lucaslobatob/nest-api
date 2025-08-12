@@ -13,4 +13,9 @@ export class TasksService {
   findOne(id: string) {
     return 'Tarefa encontrada com o ID: ' + id;
   }
+
+  create(body: any) {
+    console.log('Tarefa criada com sucesso');
+    return body;
+  }
 }
