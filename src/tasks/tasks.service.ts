@@ -1,21 +1,49 @@
 import { Injectable } from '@nestjs/common';
+import { Task } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
+  private tasks: Task[] = [
+    {
+      id: 1,
+      name: 'Seguir os passos do curso',
+      description: 'Assistir as aulas e praticar o que foi ensinado',
+      completed: false,
+    },
+  ];
+
   findAll() {
-    return [
-      { id: 1, title: 'Task 1', description: 'Description for Task 1' },
-      { id: 2, title: 'Task 2', description: 'Description for Task 2' },
-      { id: 3, title: 'Task 3', description: 'Description for Task 3' },
-    ];
+    return this.tasks;
   }
 
   findOne(id: string) {
-    return 'Tarefa encontrada com o ID: ' + id;
+    return this.tasks.find((task) => task.id === Number(id));
   }
 
   create(body: any) {
-    console.log('Tarefa criada com sucesso');
-    return body;
+    const newId = this.tasks.length + 1;
+    const newTask = {
+      id: newId,
+      ...body,
+    };
+
+    this.tasks.push(newTask);
+
+    return newTask;
+  }
+
+  update(id: string, body: any) {
+    const taskIndex = this.tasks.findIndex((task) => task.id === Number(id));
+
+    if (taskIndex >= 0) {
+      const taskItem = this.tasks[taskIndex];
+
+      this.tasks[taskIndex] = {
+        ...taskItem,
+        ...body,
+      };
+    }
+
+    return 'Tarefa atualizada com sucesso';
   }
 }
