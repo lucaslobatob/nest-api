@@ -6,7 +6,15 @@
        retornar um erro antes de chegar no serviço.
 */
 
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+
 export class CreateTaskDto {
+  @IsString()
+  @MinLength(3)
+  @IsNotEmpty()
   readonly name: string;
+
+  @IsString()
+  @MinLength(5)
   readonly description: string;
 }
