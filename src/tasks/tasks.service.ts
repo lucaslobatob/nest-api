@@ -7,9 +7,14 @@ import {
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TasksService {
+  constructor(private prisma: PrismaService) {
+    // O PrismaService é injetado aqui para ser usado nas operações de banco de dados
+  }
+
   private tasks: Task[] = [
     {
       id: 1,
@@ -19,19 +24,21 @@ export class TasksService {
     },
   ];
 
-  findAll() {
-    return this.tasks;
+  async findAll() {
+    const allTasks = await this.prisma.task.findMany();
+    return allTasks;
   }
 
-  findOne(id: number) {
-    const task = this.tasks.find((task) => task.id === id);
+  async findOne(id: number) {
+    const task = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
 
-    if (task) {
-      return task;
-    }
+    if (task?.name) return task;
 
-    // throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND); // 1º Tipo de erro
-    throw new NotFoundException('Essa tarefa não existe'); // 2º Tipo de erro
+    throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND);
   }
 
   create(createTaskDto: CreateTaskDto) {
