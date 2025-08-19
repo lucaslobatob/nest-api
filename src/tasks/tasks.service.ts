@@ -41,34 +41,37 @@ export class TasksService {
     throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND);
   }
 
-  create(createTaskDto: CreateTaskDto) {
-    const newId = this.tasks.length + 1;
-    const newTask = {
-      id: newId,
-      ...createTaskDto,
-      completed: false,
-    };
+  async create(createTaskDto: CreateTaskDto) {
+    const newtask = await this.prisma.task.create({
+      data: {
+        name: createTaskDto.name,
+        description: createTaskDto.description,
+        completed: false,
+      },
+    });
 
-    this.tasks.push(newTask);
-
-    return newTask;
+    return newtask;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    const taskIndex = this.tasks.findIndex((task) => task.id === id);
+  async update(id: number, updateTaskDto: UpdateTaskDto) {
+    const findTask = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
 
-    if (taskIndex < 0) {
-      throw new NotFoundException('Essa tarefa não existe');
+    if (!findTask) {
+      throw new HttpException('Essa tarefa não existe', HttpStatus.NOT_FOUND);
     }
 
-    const taskItem = this.tasks[taskIndex];
+    const task = await this.prisma.task.update({
+      where: {
+        id: findTask.id,
+      },
+      data: updateTaskDto,
+    });
 
-    this.tasks[taskIndex] = {
-      ...taskItem,
-      ...updateTaskDto,
-    };
-
-    return taskItem;
+    return task;
   }
 
   delete(id: number) {
