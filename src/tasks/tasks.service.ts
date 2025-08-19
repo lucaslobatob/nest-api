@@ -74,14 +74,20 @@ export class TasksService {
     return task;
   }
 
-  delete(id: number) {
-    const taskIndex = this.tasks.findIndex((task) => task.id === id);
-
-    if (taskIndex < 0) {
+  async delete(id: number) {
+    const findTask = await this.prisma.task.findFirst({
+      where: {
+        id: id,
+      },
+    });
+    if (!findTask) {
       throw new NotFoundException('Essa tarefa não existe');
     }
-
-    this.tasks.splice(taskIndex, 1);
-    return `Tarefa com o ID: ${id} deletada com sucesso`;
+    await this.prisma.task.delete({
+      where: {
+        id: findTask.id,
+      },
+    });
+    return { message: 'Tarefa deletada com sucesso' };
   }
 }
