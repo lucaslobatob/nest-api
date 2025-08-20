@@ -16,15 +16,6 @@ export class TasksService {
     // O PrismaService é injetado aqui para ser usado nas operações de banco de dados
   }
 
-  private tasks: Task[] = [
-    {
-      id: 1,
-      name: 'Seguir os passos do curso',
-      description: 'Assistir as aulas e praticar o que foi ensinado',
-      completed: false,
-    },
-  ];
-
   async findAll(paginationDto?: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto || {};
 
